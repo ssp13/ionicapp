@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
     <title></title>
-
+ <script data-require="jquery@2.1.1" data-semver="2.1.1" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
 
@@ -30,10 +30,14 @@
    
         
   <ion-content>
+      <div style="position:absolute" >
+      <img src="/img/north-pole-4.jpg">    
+      </div>
+      
 <div class="row">
     
 
- <button class="button button-full button-calm" ng-click="model.pwr('on');">
+ <button  class="button button-full button-calm" ng-click="model.pwr('on');">
   ON
 </button>
     
@@ -49,9 +53,10 @@
   OFF
 </button>
    </div>
-  
-      
+  Temp:<span flash="">{{model.temp}} °C</span>
+<!--      {{state}}
        {{model}}
+       {{st}}-->
       </ion-content>
     
 
