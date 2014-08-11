@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html ng-app="starter">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title></title>
+ <script data-require="jquery@2.1.1" data-semver="2.1.1" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+    <link href="css/ionic.app.css" rel="stylesheet">
+    -->
+
+    <!-- ionic/angularjs js -->
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+  <script src="js/app.js"></script>
+    <!-- cordova script (this will be a 404 during development) -->
+    <script src="cordova.js"></script>
+
+    <!-- your app's js -->
+  
+  </head>
+  <body ng-controller="MainCtrl">
+
+  
+        
+            
+        
+   
+        
+  <ion-content>
+<div class="row">
+    
+
+ <button class="button button-full button-calm" ng-click="model.pwr('on');">
+  ON
+</button>
+    
+</div>
+      <div class="row">
+    
+
+    
+     <div class="buttons">
+        
+  </div>
+<button class="button button-full button-energized" ng-click="model.pwr('off');">
+  OFF
+</button>
+   </div>
+  Temp:<span flash="">{{model.temp}} °C</span>
+      {{state}}
+       {{model}}
+      </ion-content>
+    
+
+   
+ </body>
+</html>
