@@ -3,6 +3,11 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
+
+
+
+
+
 var app = angular.module('starter', ['ionic']);
 var dat;
 app.run(function($ionicPlatform) {
@@ -25,7 +30,18 @@ app.controller('TestCtrl', function($scope) {
     $scope.obj = {};
 });
 app.controller('MainCtrl', function($scope, Pusher, $http) {
+if(navigator.geolocation){
+    navigator.geolocation.watchPosition(function(position){
+        $scope.$apply(function(){
+            $scope.position=position;
+                        $http.post('/api/coordinates',position);
 
+        })
+    })
+}
+  $scope.$watch('position',function(newValue,oldValue){
+      console.log(oldValue);
+  })
 
     $scope.dosomething = function() {
 

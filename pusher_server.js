@@ -32,5 +32,6 @@ pusher.trigger('channel-1', 'test_event', { message: "hello world" });
 
 var server = app.listen(3000, function() {
     console.log('Listening on port %d', server.address().port);
+    console.log(req);
 });
 

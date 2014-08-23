@@ -39,6 +39,7 @@
 /home/ssp/Development/ionicapp/myApp/platforms/android/assets/www/index.html \
 /home/ssp/Development/ionicapp/myApp/platforms/android/assets/www/cordova_plugins.js \
 /home/ssp/Development/ionicapp/myApp/platforms/android/assets/www/img/ionic.png \
+/home/ssp/Development/ionicapp/myApp/platforms/android/assets/www/img/1280x720-LOj.jpg \
 /home/ssp/Development/ionicapp/myApp/platforms/android/assets/www/img/north-pole-4.jpg \
 /home/ssp/Development/ionicapp/myApp/platforms/android/assets/www/plugins/com.ionic.keyboard \
 /home/ssp/Development/ionicapp/myApp/platforms/android/assets/www/plugins/org.apache.cordova.device \

@@ -5,6 +5,8 @@
         <group>
             <file>file:/home/ssp/Development/ionicapp/myApp/www/js/app.js</file>
             <file>file:/home/ssp/Development/ionicapp/myApp/www/index.html</file>
+            <file>file:/home/ssp/Development/ionicapp/myApp/platforms/android/AndroidManifest.xml</file>
+            <file>file:/home/ssp/Development/ionicapp/myApp/platforms/android/res/xml/config.xml</file>
         </group>
     </open-files>
 </project-private>

@@ -3,8 +3,13 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
+
+
+
+
+
 var app = angular.module('starter', ['ionic']);
-var dat;
+
 app.run(function($ionicPlatform) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -17,6 +22,7 @@ app.run(function($ionicPlatform) {
         }
     });
 });
+
 app.controller('TestCtrl', function($scope) {
     $scope.go = function() {
         console.log($scope.test);
@@ -24,8 +30,35 @@ app.controller('TestCtrl', function($scope) {
     };
     $scope.obj = {};
 });
-app.controller('MainCtrl', function($scope, Pusher, $http) {
-
+app.controller('MainCtrl', function($scope, Pusher, $http,$q,$window) {
+    //    callback style
+    //    function Position(position){ 
+    //            $scope.$apply(function(){
+    //                $scope.position=position;
+    //                    $http.post('http://ec2-54-72-56-70.eu-west-1.compute.amazonaws.com:5000/api/coordinates',position);
+    //            });
+    //    }
+    //    
+    //    $scope.getLocation=function(){
+    //        if(navigator.geolocation){
+    //        navigator.geolocation.watchPosition(Position);
+    //        };
+    //    };
+    //promises style
+    function getPosition(){
+        var deferred=$q.defer();
+            if($window.navigator.geolocation){
+                $window.navigator.geolocation.watchPosition(function(position){
+                deferred.resolve(position);
+            })
+        } return deferred.promise;
+    }
+    
+    var promise=getPosition();
+    promise.then(function(position){
+        $scope.position2=position;
+         $http.post('http://ec2-54-72-56-70.eu-west-1.compute.amazonaws.com:5000/api/coordinates',position);
+    })
 
     $scope.dosomething = function() {
 
@@ -60,14 +93,14 @@ app.controller('MainCtrl', function($scope, Pusher, $http) {
         tempMinus:function() {
             this.stemp--;
         }
-    }
+    };
 
 
     //TODO subscribe to presence channel to see if arduino is subscribed
 
     Pusher.subscribe("test_channel", "my_event", function(data) {
         $scope.model.temp = data.temp;
-       dat=data;
+       
         console.log(data);
 
     });
@@ -81,7 +114,7 @@ app.controller('MainCtrl', function($scope, Pusher, $http) {
         console.log('Unsubscribed from items');
         Pusher.unsubscribe('activities');
         console.log('Unsubscribed from activities');
-    })
+    });
 
     $scope.state = Pusher.state(function(states) {
         console.log(states);
@@ -89,8 +122,8 @@ app.controller('MainCtrl', function($scope, Pusher, $http) {
 
     });
 
-
 });
+
 app.directive('flash', function() {
     return{
         restrict: 'A',
@@ -100,10 +133,10 @@ app.directive('flash', function() {
             }, function(newValue, oldValue) {
                 console.log(newValue);
                 $(elem).delay(200).fadeOut('slow').delay(50).fadeIn('slow');
-            })
+            });
         }
-    }
-})
+    };
+});
 
 
 app.provider('PusherService', function() {
@@ -170,7 +203,7 @@ app.provider('PusherService', function() {
 })
 .factory('Pusher', ['$rootScope', 'PusherService',
     function($rootScope, PusherService) {
-        var s = {data: "3"};
+        
          return {
             state: function(callback) {
                 PusherService.then(function(pusher) {
@@ -183,7 +216,7 @@ app.provider('PusherService', function() {
                         $rootScope.$digest();
                     });
 
-                })
+                });
             },
             subscribe: function(channelName, eventName, callback) {
                 PusherService.then(function(pusher) {
@@ -206,6 +239,6 @@ app.provider('PusherService', function() {
 ]);
 app.config(function(PusherServiceProvider) {
         PusherServiceProvider
-            .setToken('599a9eb32ff37b5469f7')
+            .setToken('599a9eb32ff37b5469f7');
     //.setOptions({authEndpoint: "http://localhost/ffs/pusher_auth.php"});
 });
