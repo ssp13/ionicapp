@@ -23,48 +23,96 @@ app.run(function($ionicPlatform) {
     });
 });
 
-app.controller('TestCtrl', function($scope) {
-    $scope.go = function() {
-        console.log($scope.test);
-        console.log($scope.obj.test);
-    };
-    $scope.obj = {};
-});
-app.controller('MainCtrl', function($scope, Pusher, $http,$q,$window) {
-    //    callback style
-    //    function Position(position){ 
-    //            $scope.$apply(function(){
-    //                $scope.position=position;
-    //                    $http.post('http://ec2-54-72-56-70.eu-west-1.compute.amazonaws.com:5000/api/coordinates',position);
-    //            });
-    //    }
-    //    
-    //    $scope.getLocation=function(){
-    //        if(navigator.geolocation){
-    //        navigator.geolocation.watchPosition(Position);
-    //        };
-    //    };
+
+app.controller('MainCtrl', function($scope, Pusher, $http,$q) {
+     
+       if(navigator.geolocation){
+    navigator.geolocation.watchPosition(function(position){        $scope.$apply(function(){
+           $scope.position2=position;
+           $http.post('/api/coordinates',position);
+       })
+   })
+}
     //promises style
     function getPosition(){
         var deferred=$q.defer();
-            if($window.navigator.geolocation){
-                $window.navigator.geolocation.watchPosition(function(position){
-                deferred.resolve(position);
-            })
-        } return deferred.promise;
-    }
-    
-    var promise=getPosition();
-    promise.then(function(position){
-        $scope.position2=position;
-         $http.post('http://ec2-54-72-56-70.eu-west-1.compute.amazonaws.com:5000/api/coordinates',position);
-    })
-
-    $scope.dosomething = function() {
-
-
+            if(navigator.geolocation){
+                 navigator.geolocation.watchPosition(function(position){
+                    deferred.resolve(position);
+                })
+            }    
+        return deferred.promise;
+        }
+   
+    $scope.getDistance=function getDistance(lat1,lon1,lat2,lon2){
+	        
+        var R = 6371; // Radius of the earth in km
+ 	var dLat = (lat2-lat1).toRad();  // Javascript functions in radians
+ 	var dLon = (lon2-lon1).toRad(); 
+ 	var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) * 
+        Math.sin(dLon/2) * Math.sin(dLon/2); 
+  	var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  	var d = R * c; // Distance in km
+ 	return d;
     };
+ 	/** Converts numeric degrees to radians */
+        if (typeof(Number.prototype.toRad) === "undefined") {
+            Number.prototype.toRad = function() {
+            return this * Math.PI / 180;
+            }
+        };
+            
+    var homePos=function(position){
+        this.lat=position.coords.latitude;
+        this.lon=position.coords.longitude;
+        this.accuracy=position.coords.accuracy;
+    };
+    
+    var Pos=function(position){
+        this.lat=position.coords.latitude;
+        this.lon=position.coords.longitude;
+        this.accuracy=position.coords.accuracy;
+    };
+    
+    $scope.home=new homePos({coords:{latitude:37.8653,longitude:23.7574489}});
+    var promise=getPosition();
+    
+    promise.then(function(position){
+        
+        $scope.position=new Pos(position);
+        $scope.distance=$scope.getDistance($scope.position.lat,$scope.position.lon,Number($scope.home.lat),$scope.home.lon);
+        $scope.w();
+        $http.post('http://ec2-54-72-56-70.eu-west-1.compute.amazonaws.com:5000/api/coordinates',position);
+    },function(error){
+       $scope.error="error location";
+    });
+    
+    $scope.w=function(){
+        $scope.$watch(function(){
+        return $scope.home.lat;
+        },function(newValue){
+            if(newValue){
+             $scope.distance=$scope.getDistance($scope.position.lat,$scope.position.lon,Number($scope.home.lat),$scope.home.lon);
+             
+        }
+        }); 
+    };      
+     
+    //$scope.custom = $scope.custom === false ? true: false;
+    $scope.geoEnabled=false;
+    //can be written as this:
+    $scope.toggleGeo=function(){
+        $scope.geoEnabled=!$scope.geoEnabled;
+        if($scope.geoEnabled){
+            if($scope.distance<1)$scope.model.pwr("on");
+             if($scope.distance>2)$scope.model.pwr("off");
+        }else $scope.model.pwr("off");
+    };
+    //$scope.custom = ! $scope.custom;
+   
 
+    
     $scope.name = 'World';
     $scope.fanspeeds = {
         low: "low",

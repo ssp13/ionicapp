@@ -31,13 +31,13 @@
         
   <ion-content>
       <div style="position:absolute" >
-      <img src="/img/1280x720-LOj.jpg" width="1650px">    
+      <img src="/myApp/www/img/north-pole-4.jpg" width="1650px">    
       </div>
       
 <div class="row">
     
 
- <button  class="button button-full button-calm" ng-click="model.pwr('on');">
+ <button  class="button button-full button-calm" style="height:120px" ng-click="model.pwr('on');">
   ON
 </button>
     
@@ -49,18 +49,39 @@
      <div class="buttons">
         
   </div>
-<button class="button button-full button-energized" ng-click="model.pwr('off');">
+<button class="button button-full button-energized" style="height:120px" ng-click="model.pwr('off');">
   OFF
 </button>
    </div>
   Temp:<span flash="">{{model.temp}} °C</span>
-  {{position}}
+  {{position}}s
+  {{position2}}
   <br>
-  position2{{position2}}
-  position3{{position3}}
+Distance:{{distance}}
+{{distance2}}
+Error:{{error}}
 <!--      {{state}}
        {{model}}
        {{st}}-->
+
+        <div class="item item-input">
+    <label class="item-input">
+      <input type="text" >
+    </label>
+    
+  </div>
+           
+    <ul class="list">
+
+     <li class="item item-checkbox">
+         <label class="checkbox">
+        <input type="checkbox" ng-model="on" ng-change="toggleGeo()">
+        </label>
+        Enable GeoFence {{geoEnabled}}
+    </li>
+
+  
+    </ul>
       </ion-content>
     
 

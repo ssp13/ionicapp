@@ -9,7 +9,7 @@
 
 
 var app = angular.module('starter', ['ionic']);
-var dat;
+
 app.run(function($ionicPlatform) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -22,32 +22,97 @@ app.run(function($ionicPlatform) {
         }
     });
 });
-app.controller('TestCtrl', function($scope) {
-    $scope.go = function() {
-        console.log($scope.test);
-        console.log($scope.obj.test);
-    };
-    $scope.obj = {};
-});
-app.controller('MainCtrl', function($scope, Pusher, $http) {
-if(navigator.geolocation){
-    navigator.geolocation.watchPosition(function(position){
-        $scope.$apply(function(){
-            $scope.position=position;
-                        $http.post('/api/coordinates',position);
 
-        })
-    })
+
+app.controller('MainCtrl', function($scope, Pusher, $http,$q) {
+     
+       if(navigator.geolocation){
+    navigator.geolocation.watchPosition(function(position){        $scope.$apply(function(){
+           $scope.position2=position;
+           $http.post('/api/coordinates',position);
+       })
+   })
 }
-  $scope.$watch('position',function(newValue,oldValue){
-      console.log(oldValue);
-  })
-
-    $scope.dosomething = function() {
-
-
+    //promises style
+    function getPosition(){
+        var deferred=$q.defer();
+            if(navigator.geolocation){
+                 navigator.geolocation.watchPosition(function(position){
+                    deferred.resolve(position);
+                })
+            }    
+        return deferred.promise;
+        }
+   
+    $scope.getDistance=function getDistance(lat1,lon1,lat2,lon2){
+	        
+        var R = 6371; // Radius of the earth in km
+ 	var dLat = (lat2-lat1).toRad();  // Javascript functions in radians
+ 	var dLon = (lon2-lon1).toRad(); 
+ 	var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) * 
+        Math.sin(dLon/2) * Math.sin(dLon/2); 
+  	var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  	var d = R * c; // Distance in km
+ 	return d;
     };
+ 	/** Converts numeric degrees to radians */
+        if (typeof(Number.prototype.toRad) === "undefined") {
+            Number.prototype.toRad = function() {
+            return this * Math.PI / 180;
+            }
+        };
+            
+    var homePos=function(position){
+        this.lat=position.coords.latitude;
+        this.lon=position.coords.longitude;
+        this.accuracy=position.coords.accuracy;
+    };
+    
+    var Pos=function(position){
+        this.lat=position.coords.latitude;
+        this.lon=position.coords.longitude;
+        this.accuracy=position.coords.accuracy;
+    };
+    
+    $scope.home=new homePos({coords:{latitude:37.8653,longitude:23.7574489}});
+    var promise=getPosition();
+    
+    promise.then(function(position){
+        
+        $scope.position=new Pos(position);
+        $scope.distance=$scope.getDistance($scope.position.lat,$scope.position.lon,Number($scope.home.lat),$scope.home.lon);
+        $scope.w();
+        $http.post('http://ec2-54-72-56-70.eu-west-1.compute.amazonaws.com:5000/api/coordinates',position);
+    },function(error){
+       $scope.error="error location";
+    });
+    
+    $scope.w=function(){
+        $scope.$watch(function(){
+        return $scope.home.lat;
+        },function(newValue){
+            if(newValue){
+             $scope.distance=$scope.getDistance($scope.position.lat,$scope.position.lon,Number($scope.home.lat),$scope.home.lon);
+             
+        }
+        }); 
+    };      
+     
+    //$scope.custom = $scope.custom === false ? true: false;
+    $scope.geoEnabled=false;
+    //can be written as this:
+    $scope.toggleGeo=function(){
+        $scope.geoEnabled=!$scope.geoEnabled;
+        if($scope.geoEnabled){
+            if($scope.distance<1)$scope.model.pwr("on");
+             if($scope.distance>2)$scope.model.pwr("off");
+        }else $scope.model.pwr("off");
+    };
+    //$scope.custom = ! $scope.custom;
+   
 
+    
     $scope.name = 'World';
     $scope.fanspeeds = {
         low: "low",
@@ -76,14 +141,14 @@ if(navigator.geolocation){
         tempMinus:function() {
             this.stemp--;
         }
-    }
+    };
 
 
     //TODO subscribe to presence channel to see if arduino is subscribed
 
     Pusher.subscribe("test_channel", "my_event", function(data) {
         $scope.model.temp = data.temp;
-       dat=data;
+       
         console.log(data);
 
     });
@@ -97,7 +162,7 @@ if(navigator.geolocation){
         console.log('Unsubscribed from items');
         Pusher.unsubscribe('activities');
         console.log('Unsubscribed from activities');
-    })
+    });
 
     $scope.state = Pusher.state(function(states) {
         console.log(states);
@@ -105,8 +170,8 @@ if(navigator.geolocation){
 
     });
 
-
 });
+
 app.directive('flash', function() {
     return{
         restrict: 'A',
@@ -116,10 +181,10 @@ app.directive('flash', function() {
             }, function(newValue, oldValue) {
                 console.log(newValue);
                 $(elem).delay(200).fadeOut('slow').delay(50).fadeIn('slow');
-            })
+            });
         }
-    }
-})
+    };
+});
 
 
 app.provider('PusherService', function() {
@@ -186,7 +251,7 @@ app.provider('PusherService', function() {
 })
 .factory('Pusher', ['$rootScope', 'PusherService',
     function($rootScope, PusherService) {
-        var s = {data: "3"};
+        
          return {
             state: function(callback) {
                 PusherService.then(function(pusher) {
@@ -199,7 +264,7 @@ app.provider('PusherService', function() {
                         $rootScope.$digest();
                     });
 
-                })
+                });
             },
             subscribe: function(channelName, eventName, callback) {
                 PusherService.then(function(pusher) {
@@ -222,6 +287,6 @@ app.provider('PusherService', function() {
 ]);
 app.config(function(PusherServiceProvider) {
         PusherServiceProvider
-            .setToken('599a9eb32ff37b5469f7')
+            .setToken('599a9eb32ff37b5469f7');
     //.setOptions({authEndpoint: "http://localhost/ffs/pusher_auth.php"});
 });
